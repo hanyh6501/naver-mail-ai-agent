@@ -3,6 +3,7 @@ import csv
 
 from src.mail_client import fetch_emails
 from src.classifier import classify_email
+from src.feedback import find_feedback
 
 
 def main():
@@ -22,10 +23,16 @@ def main():
         print(f"\n[{index}/{len(emails)}] AI 분석 중...")
 
         try:
+            previous_feedback = find_feedback(
+                sender=mail["sender"],
+                subject=mail["subject"]
+            )
+
             result = classify_email(
                 sender=mail["sender"],
                 subject=mail["subject"],
-                body=mail["body"]
+                body=mail["body"],
+                feedback=previous_feedback
             )
 
         except Exception as exc:
@@ -44,8 +51,10 @@ def main():
             "sender": mail["sender"],
             "subject": mail["subject"],
             "category": result["category"],
-            "reason": result.get("reason", "")
+            "reason": result.get("reason", ""),
+            "corrected_category": ""
         })
+
 
     # 3. CSV 결과 저장
     with open(
@@ -61,7 +70,8 @@ def main():
                 "sender",
                 "subject",
                 "category",
-                "reason"
+                "reason",
+                "corrected_category"
             ]
         )
 

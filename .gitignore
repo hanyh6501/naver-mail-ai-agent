@@ -17,3 +17,6 @@ mail_results.csv
 
 # IDE settings
 .vscode/
+
+# feedback data
+data/
